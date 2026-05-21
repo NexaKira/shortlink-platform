@@ -1,13 +1,18 @@
 package com.sc.shortlinkcore.service;
 
+import com.sc.shortlinkcore.common.BusinessException;
 import com.sc.shortlinkcore.entity.ShortLink;
 import com.sc.shortlinkcore.repository.ShortLinkRepository;
 import com.sc.shortlinkcore.util.ShortCodeGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service   // 标记这是一个 Service 组件，Spring 会自动管理它
 public class ShortLinkService {
+
+    @Value("${shortlink.base-url}")
+    private String baseUrl;
 
     @Autowired   // 让 Spring 自动把 repository 的实例注入进来
     private ShortLinkRepository repository;
@@ -23,7 +28,7 @@ public class ShortLinkService {
 
         // 如果重试用完了还是重复，报错
         if (repository.existsByShortCode(shortCode)) {
-            throw new RuntimeException("短码生成失败，请重试");
+            throw new BusinessException(500, "短码生成失败，请重试");
         }
 
         // 创建实体对象，并保存到数据库
@@ -31,7 +36,7 @@ public class ShortLinkService {
         repository.save(link);
 
         // 返回完整的短链接地址（本地测试用）
-        return "http://localhost:8080/" + shortCode;
+        return baseUrl + shortCode;
     }
 
     // 根据短码获取原始长链接（用于跳转）
@@ -41,7 +46,7 @@ public class ShortLinkService {
         if (optional.isPresent()) {
             return optional.get().getLongUrl();  // 有值，取出长链接
         } else {
-            throw new RuntimeException("短链不存在: " + shortCode);
+            throw new BusinessException(404, "短链不存在: " + shortCode);
         }
     }
 }
