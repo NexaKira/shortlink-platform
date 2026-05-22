@@ -1,11 +1,14 @@
 package com.sc.shortlinkcore.service;
 
+import com.sc.shortlinkcore.common.BloomFilterService;
 import com.sc.shortlinkcore.common.BusinessException;
 import com.sc.shortlinkcore.entity.ShortLink;
 import com.sc.shortlinkcore.repository.ShortLinkRepository;
-import com.sc.shortlinkcore.util.ShortCodeGenerator;
+import com.sc.shortlinkcore.util.Base62Encoder;
+import com.sc.shortlinkcore.util.SnowflakeIdGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service   // 标记这是一个 Service 组件，Spring 会自动管理它
@@ -17,30 +20,34 @@ public class ShortLinkService {
     @Autowired   // 让 Spring 自动把 repository 的实例注入进来
     private ShortLinkRepository repository;
 
+    @Autowired  // 让 Spring 自动把 bloomFilter 的实例注入进来
+    private BloomFilterService bloomFilter;
+
+    @Autowired
+    private SnowflakeIdGenerator snowflakeIdGenerator;
+
     // 生成短链的方法
     public String createShortLink(String longUrl) {
-        String shortCode;
-        int maxRetry = 3;   // 最多重试3次
-        do {
-            shortCode = ShortCodeGenerator.generate();  // 生成随机短码
-        } while (repository.existsByShortCode(shortCode) && --maxRetry > 0);
-        // 如果短码已经存在，就重新生成，直到重试次数用完
-
-        // 如果重试用完了还是重复，报错
-        if (repository.existsByShortCode(shortCode)) {
-            throw new BusinessException(500, "短码生成失败，请重试");
-        }
+        long snowflakeId = snowflakeIdGenerator.nextId();
+        String shortCode = Base62Encoder.encode(snowflakeId);  // 生成随机短码
 
         // 创建实体对象，并保存到数据库
         ShortLink link = new ShortLink(shortCode, longUrl);
         repository.save(link);
+        // 将新创建的短码加载进布隆过滤器
+        bloomFilter.put(shortCode);
 
         // 返回完整的短链接地址（本地测试用）
         return baseUrl + shortCode;
     }
 
     // 根据短码获取原始长链接（用于跳转）
+    @Cacheable(value = "shortlink", key = "#shortCode")
     public String getLongUrl(String shortCode) {
+        // 布隆过滤器过滤一遍
+        if (!bloomFilter.mightContain(shortCode)) {
+            throw new BusinessException(404, "短链不存在: " + shortCode);
+        }
         // Optional 像一个盒子，里面可能有值，也可能为空
         java.util.Optional<ShortLink> optional = repository.findByShortCode(shortCode);
         if (optional.isPresent()) {
