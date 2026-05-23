@@ -59,11 +59,13 @@
 
 ## 第三阶段：深度扩展（亮点项）
 
-### 8. 短链访问统计
-- 新建 `click_log` 表（short_code、visitor_ip、user_agent、referer、click_time）
-- 每次重定向通过 `@Async` 异步写入日志，不阻塞主流程
-- 提供 `/stats/{shortCode}` 接口查询访问次数
-- **涉及知识点**：`@Async`、`ThreadPoolTaskExecutor`、AOP 切面
+### 8. 短链访问统计 ✅
+- [x] 新建 `ClickLog` 实体（click_log 表，含 short_code、visitor_ip、user_agent、referer、click_time）
+- [x] `ClickLogService.logClick()` 用 `@Async` 异步写入，不阻塞 302 跳转
+- [x] `@EnableAsync` 开启异步支持
+- [x] Controller 从 `HttpServletRequest` 提取 IP/UA/Referer，经 Service 层委托写入
+- [x] 提供 `GET /stats/{shortCode}` 接口查询点击次数
+- **涉及知识点**：`@Async`、`@EnableAsync`、分层架构（Controller 不碰 Repository）、`HttpServletRequest`
 
 ### 9. 限流保护
 - 使用 Guava `RateLimiter` 对 `/shorten` 接口限流
@@ -101,6 +103,7 @@ shortlink-platform/
 |------|--------|------|
 | 2026-05-21 | 第一阶段全部完成 | 统一响应格式、参数校验、配置外部化、Lombok、自定义业务异常 |
 | 2026-05-22 | 第二阶段全部完成 | Redis缓存、布隆过滤器、雪花算法ID生成、Base62编码 |
+| 2026-05-23 | 短链访问统计 | ClickLog异步记录、/stats接口、分层架构重构 |
 
 ---
 

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+
 @Service   // 标记这是一个 Service 组件，Spring 会自动管理它
 public class ShortLinkService {
 
@@ -25,6 +26,9 @@ public class ShortLinkService {
 
     @Autowired
     private SnowflakeIdGenerator snowflakeIdGenerator;
+
+    @Autowired
+    private ClickLogService clickLogService;
 
     // 生成短链的方法
     public String createShortLink(String longUrl) {
@@ -56,4 +60,9 @@ public class ShortLinkService {
             throw new BusinessException(404, "短链不存在: " + shortCode);
         }
     }
+
+    public void recordClick(String shortCode, String visitorIp, String userAgent, String referer) {
+        clickLogService.logClick(shortCode, visitorIp, userAgent, referer);
+    }
+
 }
