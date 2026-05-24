@@ -1,10 +1,10 @@
 package com.sc.shortlinkcore.service;
 
 import com.sc.shortlinkcore.common.BloomFilterService;
-import com.sc.shortlinkcore.common.BusinessException;
+import com.sc.shortlinkcommon.BusinessException;
 import com.sc.shortlinkcore.entity.ShortLink;
 import com.sc.shortlinkcore.repository.ShortLinkRepository;
-import com.sc.shortlinkcore.util.Base62Encoder;
+import com.sc.shortlinkcommon.util.Base62Encoder;
 import com.sc.shortlinkcore.util.SnowflakeIdGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

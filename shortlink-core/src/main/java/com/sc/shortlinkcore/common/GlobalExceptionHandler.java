@@ -1,9 +1,10 @@
 package com.sc.shortlinkcore.common;
 
-import jakarta.validation.Constraint;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import com.sc.shortlinkcommon.Result;
+import com.sc.shortlinkcommon.BusinessException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {

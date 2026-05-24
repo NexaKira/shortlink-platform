@@ -1,4 +1,4 @@
-package com.sc.shortlinkcore.util;
+package com.sc.shortlinkcommon.util;
 
 public class Base62Encoder {
 

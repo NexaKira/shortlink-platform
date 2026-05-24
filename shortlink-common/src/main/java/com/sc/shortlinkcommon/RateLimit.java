@@ -1,4 +1,4 @@
-package com.sc.shortlinkcore.common;
+package com.sc.shortlinkcommon;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -1,4 +1,4 @@
-package com.sc.shortlinkcore.common;
+package com.sc.shortlinkcommon;
 
 import lombok.Getter;
 

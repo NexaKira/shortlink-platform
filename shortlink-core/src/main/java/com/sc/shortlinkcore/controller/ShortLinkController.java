@@ -1,7 +1,7 @@
 package com.sc.shortlinkcore.controller;
 
-import com.sc.shortlinkcore.common.RateLimit;
-import com.sc.shortlinkcore.common.Result;
+import com.sc.shortlinkcommon.RateLimit;
+import com.sc.shortlinkcommon.Result;
 import com.sc.shortlinkcore.service.ClickLogService;
 import com.sc.shortlinkcore.service.ShortLinkService;
 import jakarta.servlet.http.HttpServletRequest;

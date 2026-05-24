@@ -67,19 +67,18 @@
 - [x] 提供 `GET /stats/{shortCode}` 接口查询点击次数
 - **涉及知识点**：`@Async`、`@EnableAsync`、分层架构（Controller 不碰 Repository）、`HttpServletRequest`
 
-### 9. 限流保护
-- 使用 Guava `RateLimiter` 对 `/shorten` 接口限流
-- 通过 `HandlerInterceptor` 拦截器 + 注解实现声明式限流
-- **涉及知识点**：令牌桶/漏桶算法、`HandlerInterceptor`、自定义注解
+### 9. 限流保护 ✅
+- [x] 使用 Guava `RateLimiter` 对 `/shorten` 接口限流
+- [x] 通过 `HandlerInterceptor` 拦截器 + 自定义 `@RateLimit` 注解实现声明式限流
+- [x] `ConcurrentHashMap<String, RateLimiter>` 按方法名隔离限流器
+- **涉及知识点**：令牌桶/漏桶算法、`HandlerInterceptor`、自定义注解、`computeIfAbsent`
 
-### 10. 多模块拆分
-```
-shortlink-platform/
-├── shortlink-common/      # 公共工具类、统一响应、异常定义
-├── shortlink-core/        # 核心业务逻辑
-├── shortlink-cache/       # Redis/缓存相关
-└── shortlink-admin/       # 后台统计管理（新增）
-```
+### 10. 多模块拆分 ✅
+- [x] Root POM（packaging=pom）统一管理子模块
+- [x] `shortlink-common`：公共工具类（Result、BusinessException、RateLimit 注解、Base62Encoder）
+- [x] `shortlink-core`：核心业务逻辑（依赖 common）
+- [x] package 命名规范（com.sc.shortlinkcommon / com.sc.shortlinkcore）
+- **涉及知识点**：Maven 多模块、父子 POM 继承、依赖传递、provided scope 不传递
 
 ---
 
@@ -104,6 +103,7 @@ shortlink-platform/
 | 2026-05-21 | 第一阶段全部完成 | 统一响应格式、参数校验、配置外部化、Lombok、自定义业务异常 |
 | 2026-05-22 | 第二阶段全部完成 | Redis缓存、布隆过滤器、雪花算法ID生成、Base62编码 |
 | 2026-05-23 | 短链访问统计 | ClickLog异步记录、/stats接口、分层架构重构 |
+| 2026-05-24 | 限流保护、多模块拆分 | RateLimiter声明式限流、common/core分离 |
 
 ---
 
@@ -119,7 +119,7 @@ shortlink-platform/
 | 布隆过滤器 | 无 | Guava BloomFilter |
 | ORM | JPA / Hibernate | JPA / Hibernate |
 | 校验 | Bean Validation | Bean Validation |
-| 限流 | 无 | Guava RateLimiter / Redisson |
+| 限流 | Guava RateLimiter | Guava RateLimiter + @RateLimit |
 | 文档 | 无 | SpringDoc OpenAPI |
 | 部署 | 本地 IDE | Docker Compose |
-| 构建 | Maven | Maven |
+| 构建 | Maven | Maven 多模块 |
