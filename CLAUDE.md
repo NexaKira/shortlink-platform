@@ -21,7 +21,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ./mvnw spring-boot:run
 ```
 
-项目需要本地 MySQL 运行在 `localhost:3306`（数据库名 `shortlink_db`，用户名 `root`，密码 `123456`）和 Redis 运行在 `localhost:6379`（密码 `123456`）。表结构由 Hibernate `ddl-auto=update` 自动管理。
+项目需要本地 MySQL 运行在 `localhost:3306`（数据库名 `shortlink_db`，用户名 `root`，密码见 `application.properties`）和 Redis 运行在 `localhost:6379`（密码见 `application.properties`）。表结构由 Hibernate `ddl-auto=update` 自动管理。
 
 ## 架构
 

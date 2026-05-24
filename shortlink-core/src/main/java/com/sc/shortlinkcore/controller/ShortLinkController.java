@@ -1,5 +1,6 @@
 package com.sc.shortlinkcore.controller;
 
+import com.sc.shortlinkcore.common.RateLimit;
 import com.sc.shortlinkcore.common.Result;
 import com.sc.shortlinkcore.service.ClickLogService;
 import com.sc.shortlinkcore.service.ShortLinkService;
@@ -24,6 +25,7 @@ public class ShortLinkController {
 
     // POST 请求，路径 /shorten，参数名为 url
     @PostMapping("/shorten")
+    @RateLimit(permitsPerSecond = 2.0)
     public Result<String> shorten(@RequestParam @NotBlank(message = "URL不能为空") @URL(message = "URL格式不正确") String url) {
         return Result.success(shortLinkService.createShortLink(url));
     }
