@@ -1,3 +1,9 @@
+# Build
+target/
+
+# Docker volumes
+data/
+
 # IDE
 .idea/
 

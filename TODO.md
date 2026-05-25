@@ -84,15 +84,17 @@
 
 ## 第四阶段：部署与文档
 
-### 11. Docker 容器化部署
-- 编写 `Dockerfile`（多阶段构建）
-- 编写 `docker-compose.yml`（MySQL + Redis + 应用）
-- **涉及知识点**：Docker 镜像构建、Docker Compose 编排
+### 11. Docker 容器化部署 ✅
+- [x] 编写 `Dockerfile`（多阶段构建：Maven 编译 → JRE 运行）
+- [x] 编写 `docker-compose.yml`（MySQL 8.0 + Redis 7 + 应用）
+- [x] `application-docker.properties` Docker 环境配置
+- [x] Spring profiles 切换（docker profile）
+- **涉及知识点**：Docker 镜像构建、多阶段构建、Docker Compose 编排、容器网络、数据卷
 
-### 12. API 文档
-- 集成 SpringDoc OpenAPI（Swagger UI）
-- 自动生成在线接口文档和调试页面
-- **涉及知识点**：OpenAPI 3.0 规范、Swagger 注解
+### 12. API 文档 ✅
+- [x] 集成 SpringDoc OpenAPI（Swagger UI）
+- [x] 访问 `http://localhost:8080/swagger-ui.html` 在线调试
+- **涉及知识点**：OpenAPI 3.0 规范、SpringDoc 自动配置
 
 ---
 
@@ -104,6 +106,7 @@
 | 2026-05-22 | 第二阶段全部完成 | Redis缓存、布隆过滤器、雪花算法ID生成、Base62编码 |
 | 2026-05-23 | 短链访问统计 | ClickLog异步记录、/stats接口、分层架构重构 |
 | 2026-05-24 | 限流保护、多模块拆分 | RateLimiter声明式限流、common/core分离 |
+| 2026-05-25 | Docker 容器化部署、API 文档 | 多阶段构建、docker-compose 编排、SpringDoc OpenAPI |
 
 ---
 
@@ -120,6 +123,6 @@
 | ORM | JPA / Hibernate | JPA / Hibernate |
 | 校验 | Bean Validation | Bean Validation |
 | 限流 | Guava RateLimiter | Guava RateLimiter + @RateLimit |
-| 文档 | 无 | SpringDoc OpenAPI |
-| 部署 | 本地 IDE | Docker Compose |
+| 文档 | SpringDoc OpenAPI | SpringDoc OpenAPI |
+| 部署 | Docker Compose | Docker Compose |
 | 构建 | Maven | Maven 多模块 |
