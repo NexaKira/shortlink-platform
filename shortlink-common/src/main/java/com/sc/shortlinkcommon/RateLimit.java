@@ -12,4 +12,9 @@ public @interface RateLimit {
     double permitsPerSecond() default 1.0; // 每秒允许的请求数量
     String message() default "请求过于频繁，请稍后重试";
 
+    enum LimitType { GLOBAL, IP }
+    LimitType limitType() default LimitType.GLOBAL;
+
+    int windowSeconds() default 1;
+
 }

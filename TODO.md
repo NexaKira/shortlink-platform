@@ -98,6 +98,45 @@
 
 ---
 
+## 第五阶段：高并发 & 分布式（含金量核心）
+
+### 13. RocketMQ 异步削峰 —— 替换 @Async
+
+- [ ] 引入 `rocketmq-spring-boot-starter` 依赖
+- [ ] `ClickLogService` 拆分为 Producer（Controller → MQ）和 Consumer（MQ → MySQL）
+- [ ] Consumer 批量写入优化（攒批 + 定时 flush），替代逐条 INSERT
+- [ ] 消息幂等：短码 + 时间戳做唯一键，`INSERT IGNORE` 或 `ON DUPLICATE KEY UPDATE`
+- [ ] 消费失败重试 + 死信队列（DLQ），兜底不丢数据
+- [ ] `docker-compose.yml` 新增 RocketMQ 容器（NameServer + Broker）
+- **涉及知识点**：异步消息削峰填谷、消息幂等、消费重试与死信队列、Producer/Consumer 解耦
+
+### 14. Redis 分布式限流 —— 替换 Guava RateLimiter
+
+- [ ] 重写 `@RateLimit` 注解，新增 `type` 属性（IP / 全局限流）
+- [ ] `RateLimitInterceptor` 改用 Redis Lua 脚本实现滑动窗口算法
+- [ ] Lua 脚本原子性保证：key = `rate_limit:{method}:{ip/window}`，INCR + EXPIRE 一条命令
+- [ ] `ConcurrentHashMap` 降级为本地兜底（Redis 不可用时回退到 Guava）
+- [ ] 支持按 IP 限流（防单用户刷接口）和全局限流（防总量打爆）
+- **涉及知识点**：滑动窗口算法、Redis Lua 原子脚本、分布式限流 vs 单机限流、降级策略
+
+### 15. 雪花算法 WorkerId 动态分配
+
+- [ ] 启动时通过 Redis `INCR` 原子获取 workerId（范围 0-1023）
+- [ ] 定时心跳续约（每 5 秒 `SETEX worker:heartbeat:{id} 10 alive`）
+- [ ] 时钟回拨优化：不再抛异常，改为短暂自旋等待 + WARN 日志告警
+- [ ] 优雅关闭时释放 workerId（`DECR` 归还）
+- **涉及知识点**：分布式 ID 生成、Redis 原子操作、时钟回拨处理策略、优雅关闭钩子
+
+### 16. 缓存击穿保护 —— Redis 互斥锁
+
+- [ ] `getLongUrl` 方法中，缓存未命中时先 `SETNX` 获取锁
+- [ ] 获锁成功 → 查 MySQL → 回写 Redis → 释放锁
+- [ ] 获锁失败 → 短暂自旋等待 → 再次尝试读缓存
+- [ ] 锁超时自动释放（`SETEX` 防死锁），超时时间 5 秒
+- **涉及知识点**：缓存击穿 vs 穿透 vs 雪崩、分布式锁、SETNX/SETEX、自旋等待
+
+---
+
 ## 进度记录
 
 | 日期 | 完成项 | 备注 |
@@ -122,7 +161,10 @@
 | 布隆过滤器 | 无 | Guava BloomFilter |
 | ORM | JPA / Hibernate | JPA / Hibernate |
 | 校验 | Bean Validation | Bean Validation |
-| 限流 | Guava RateLimiter | Guava RateLimiter + @RateLimit |
+| 限流 | Guava RateLimiter | Redis Lua 滑动窗口 + @RateLimit |
+| 消息队列 | 无 | RocketMQ（异步削峰 + 幂等消费） |
+| WorkerId | 硬编码 1 | Redis 动态分配 + 心跳续约 |
+| 缓存击穿 | 无 | Redis SETNX 互斥锁 |
 | 文档 | SpringDoc OpenAPI | SpringDoc OpenAPI |
-| 部署 | Docker Compose | Docker Compose |
+| 部署 | Docker Compose + RocketMQ | Docker Compose + RocketMQ |
 | 构建 | Maven | Maven 多模块 |
