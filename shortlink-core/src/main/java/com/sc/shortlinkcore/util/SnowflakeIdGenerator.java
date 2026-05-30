@@ -32,13 +32,13 @@ public class SnowflakeIdGenerator {
     private long lastTimestamp = -1L; // 上次生成ID的时间戳（毫秒）
 
     // 单机环境
-    public SnowflakeIdGenerator() {
-        this(1);
+    public SnowflakeIdGenerator(WorkerIdManager workerIdManager) {
+        this(workerIdManager.getWorkerId()); // 从 Redis 动态获取
     }
 
     public SnowflakeIdGenerator(long workerId ) {
         if (workerId > maxWorkerId || workerId < 0) {
-            throw new IllegalArgumentException("机器ID不合法：" + workerId);
+            throw new IllegalArgumentException("WorkerId 不合法：" + workerId);
         }
         this.workerId = workerId;
     }

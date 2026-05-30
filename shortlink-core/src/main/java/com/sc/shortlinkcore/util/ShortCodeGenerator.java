@@ -2,6 +2,9 @@ package com.sc.shortlinkcore.util;
 
 import java.security.SecureRandom;
 
+/**
+ * 已弃用
+ */
 public class ShortCodeGenerator {
 
     // 可用字符集合：小写字母 + 数字
